@@ -2,7 +2,7 @@
 name = "myev"
 version = "0.1.0"
 description = "Environment variables fetcher."
-authors = ["'Łukasz Wieczorek' <'wieczorek1990@gmail.com'>"]
+authors = ["'Łukasz Wieczorek' <wieczorek1990@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
