@@ -5,10 +5,16 @@ import sys
 
 class Environment(dict):
     """
-    Pass tuples or type to constructor:
-    * tuple(cast type, validators)
-    * tuple(cast type)
-    * cast type
+    Pass tuples or cast callable to constructor as keyword argument in following
+    format:
+    * tuple(cast callable, validators list)
+    * tuple(cast callable, validator)
+    * tuple(cast callable, [])
+    * tuple(cast callable, None)
+    * tuple(cast callable)
+    * tuple()
+    * cast callable
+    * None
     """
 
     @staticmethod
@@ -30,6 +36,8 @@ class Environment(dict):
                 validators = something[1]
                 if validators is None:
                     validators = []
+                elif callable(validators):
+                    validators = [validators]
                 return something[0], validators
             case _:
                 raise ValueError('Invalid tuple size.')
@@ -65,6 +73,9 @@ class Environment(dict):
             setattr(module, key, cast_value)
 
     def inject(self):
+        """
+        Injects keyword arguments passed to Environment into calling module.
+        """
         frame_info = inspect.stack()[1]
         module = self.get_calling_module(frame_info)
         if module is None:  # in __main__

@@ -19,8 +19,7 @@ class Validator:
         pass
 
     @utils.validator
-    def __call__(self, *args, **kwargs):
-        value = args[0]
+    def __call__(self, value, *args, **kwargs):
         return self.validate(value)
 
 
