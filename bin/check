@@ -3,4 +3,3 @@
 DIR=$(dirname "$0")/..
 
 poetry run mypy "${DIR}/myev/"
-

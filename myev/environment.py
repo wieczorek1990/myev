@@ -17,6 +17,19 @@ class Environment(dict):
     * None
     """
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.set_cast_values()
+
+    def set_cast_values(self):
+        for key, something in self.items():
+            cast, validators = self.get_cast_and_validators(something)
+            value = os.environ[key]
+            cast_value = self.get_cast_value(cast, value)
+            for validator in validators:
+                validator(cast_value)
+            self[key] = cast_value
+
     @staticmethod
     def get_calling_module(frame_info):
         return inspect.getmodule(frame_info.frame)
@@ -64,13 +77,8 @@ class Environment(dict):
             raise ValueError('Invalid cast.')
 
     def set_attributes(self, module):
-        for key, something in self.items():
-            cast, validators = self.get_cast_and_validators(something)
-            value = os.environ[key]
-            cast_value = self.get_cast_value(cast, value)
-            for validator in validators:
-                validator(cast_value)
-            setattr(module, key, cast_value)
+        for key, value in self.items():
+            setattr(module, key, value)
 
     def inject(self):
         """

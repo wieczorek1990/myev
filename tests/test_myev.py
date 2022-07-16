@@ -96,9 +96,11 @@ class EnvironmentTestCase(unittest.TestCase):
         for key, value in self.values.items():
             os.environ[key] = value
 
-        myev.Environment(**self.config).inject()
+        environment = myev.Environment(**self.config)
+        environment.inject()
         module = sys.modules[__name__]
 
         for name in self.config.keys():
             self.assertTrue(hasattr(module, name))
             self.assertEqual(getattr(module, name), self.cast_values[name])
+            self.assertEqual(environment[name], self.cast_values[name])
