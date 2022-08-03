@@ -2,8 +2,6 @@ import os
 import sys
 import unittest
 
-import validators as v_validators
-
 import myev
 from myev import validators
 
@@ -32,10 +30,12 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_D=str,
             STRING_E=(),
             STRING_F=None,
-            STRING_G=(str, [v_validators.email]),
-            STRING_H=(str, [v_validators.domain]),
-            STRING_I=(str, [v_validators.url]),
-            STRING_J=(str, v_validators.email),
+            STRING_G=(str, [validators.email]),
+            STRING_H=(str, [validators.domain]),
+            STRING_I=(str, [validators.url]),
+            STRING_J=(str, validators.email),
+            STRING_K=(str, validators.does_end_with_slash),
+            STRING_L=(str, validators.does_not_end_with_slash),
         )
         self.values = dict(
             BOOLEAN_A='1',
@@ -63,6 +63,8 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_H='localhost',
             STRING_I='https://localhost',
             STRING_J='luke@localhost',
+            STRING_K='https://google.com/',
+            STRING_L='https://google.com',
         )
         self.cast_values = dict(
             BOOLEAN_A=True,
@@ -90,6 +92,8 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_H='localhost',
             STRING_I='https://localhost',
             STRING_J='luke@localhost',
+            STRING_K='https://google.com/',
+            STRING_L='https://google.com',
         )
 
     def test_environment(self):
