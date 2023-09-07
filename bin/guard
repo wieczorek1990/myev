@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "Guard!"
+
+./bin/style &&\
+ ./bin/check &&\
+  ./bin/test
+
+if [ $? -eq 0 ]
+then
+  echo "All good."
+else
+  echo "Alarm!"
+fi

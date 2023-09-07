@@ -52,3 +52,8 @@ class IsLesserThan(ValueValidator):
 class IsEqualTo(ValueValidator):
     def validate(self, value):
         return value == self.value
+
+
+class Length(ValueValidator):
+    def validate(self, value):
+        return len(value) == self.value

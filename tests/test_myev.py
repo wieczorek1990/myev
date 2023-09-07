@@ -36,6 +36,7 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_J=(str, validators.email),
             STRING_K=(str, validators.does_end_with_slash),
             STRING_L=(str, validators.does_not_end_with_slash),
+            STRING_M=(str, validators.Length(4)),
         )
         self.values = dict(
             BOOLEAN_A='1',
@@ -65,6 +66,7 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_J='luke@localhost',
             STRING_K='https://google.com/',
             STRING_L='https://google.com',
+            STRING_M="abcd",
         )
         self.cast_values = dict(
             BOOLEAN_A=True,
@@ -94,6 +96,7 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_J='luke@localhost',
             STRING_K='https://google.com/',
             STRING_L='https://google.com',
+            STRING_M="abcd",
         )
 
     def test_environment(self):
