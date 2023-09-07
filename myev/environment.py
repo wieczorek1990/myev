@@ -56,9 +56,9 @@ class Environment(dict):
                 raise ValueError('Invalid tuple size.')
 
     def get_cast_and_validators(self, something):
-        if type(something) == type:
+        if isinstance(something, type):
             return something, []
-        elif type(something) == tuple:
+        elif isinstance(something, tuple):
             return self.get_tuple_config(something)
         elif something is None:
             return str, []
