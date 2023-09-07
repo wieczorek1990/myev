@@ -2,9 +2,12 @@
 
 echo "Guard!"
 
-./bin/style &&\
- ./bin/check &&\
-  ./bin/test $@
+./bin/sort_imports &&\
+ ./bin/format &&\
+ ./bin/style &&\
+ ./bin/lint &&\
+ ./bin/typing &&\
+ ./bin/test $@
 
 if [ $? -eq 0 ]
 then

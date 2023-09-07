@@ -12,11 +12,8 @@ class Environment(dict):
     * tuple(cast callable, validators list)
     * tuple(cast callable, validator)
     * tuple(cast callable, [])
-    * tuple(cast callable, None)
     * tuple(cast callable)
-    * tuple()
     * cast callable
-    * None
     """
 
     def __init__(self, defaults=None, **kwargs):
@@ -25,11 +22,9 @@ class Environment(dict):
         self.set_cast_values()
 
     def get_default(self, key):
-        if self.defaults is not None:
-            default = self.defaults.get(key)
-        else:
-            default = None
-        return default
+        if self.defaults is None:
+            return None
+        return self.defaults.get(key)
 
     def set_cast_values(self):
         for key, something in self.items():
@@ -38,54 +33,43 @@ class Environment(dict):
             value = os.environ.get(key, default)
             cast_value = self.get_cast_value(cast, value)
             for validator in all_validators:
-                result = validator(cast_value)
-                if isinstance(result, validators.ValidationError):
-                    raise result
+                maybe_error = validator(cast_value)
+                if isinstance(maybe_error, validators.ValidationError):
+                    raise maybe_error
             self[key] = cast_value
 
     @staticmethod
     def get_tuple_config(something):
         size = len(something)
         match size:
-            case 0:
-                return str, []
             case 1:
-                return something[0], []
+                cast = something[0]
+                return cast, []
             case 2:
-                cast, validators = something
-                if validators is None:
-                    validators = []
-                elif callable(validators):
-                    validators = [validators]
-                return cast, validators
+                cast, maybe_validators = something
+                if callable(maybe_validators):
+                    maybe_validators = [maybe_validators]
+                return cast, maybe_validators
             case _:
-                raise ValueError(f'Invalid tuple size: {size}.')
+                raise ValueError(f"Invalid tuple size: {size}.")
 
     def get_cast_and_validators(self, something):
         something_type = type(something)
         if something_type == tuple:
             return self.get_tuple_config(something)
-        elif something_type == type:
+        if something_type == type:
             return something, []
-        elif callable(something):
+        if callable(something):
             return something, []
-        elif something is None:
-            return str, []
-        else:
-            raise ValueError(f'Invalid type: {something_type}.')
+        raise ValueError(f"Invalid type: {something_type}.")
 
     @staticmethod
     def get_cast_value(cast, value):
-        if cast is str:
-            return value
-        elif cast is bool:
+        if cast is bool:
             return bool(int(value))
-        elif cast is int:
-            return int(value)
-        elif callable(cast):
+        if callable(cast):
             return cast(value)
-        else:
-            raise ValueError(f'Invalid cast: {cast}.')
+        raise ValueError(f"Invalid cast: {cast}.")
 
     @staticmethod
     def get_calling_module(frame_info):
@@ -93,7 +77,7 @@ class Environment(dict):
 
     @staticmethod
     def get_main_module():
-        return sys.modules['__main__']
+        return sys.modules["__main__"]
 
     def set_attributes(self, module):
         for key, value in self.items():
@@ -101,7 +85,8 @@ class Environment(dict):
 
     def inject(self):
         """
-        Injects keyword arguments passed to Environment into calling module.
+        Injects keyword arguments passed to Environment
+        into calling module.
         """
         frame_info = inspect.stack()[1]
         module = self.get_calling_module(frame_info)

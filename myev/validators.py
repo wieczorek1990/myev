@@ -1,6 +1,6 @@
 import abc
 
-from validators import *  # noqa
+from validators import *  # noqa; pylint: disable=W0401,W0614
 from validators import utils
 
 
@@ -16,7 +16,7 @@ def is_false(value):
 
 @utils.validator
 def does_end_with_slash(value):
-    return value.endswith('/')
+    return value.endswith("/")
 
 
 @utils.validator

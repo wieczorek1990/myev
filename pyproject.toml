@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "myev"
-version = "0.8.0"
+version = "0.9.0"
 description = "Environment variables fetcher."
 authors = ["Łukasz Wieczorek <wieczorek1990@gmail.com>"]
 license = "MIT"
@@ -11,8 +11,11 @@ python = "^3.11"
 validators = "^0.22.0"
 
 [tool.poetry.dev-dependencies]
-mypy = "^1.5.1"
+black = "^23.7.0"
 flake8 = "^6.1.0"
+isort = "^5.12.0"
+mypy = "^1.5.1"
+pylint = "^2.17.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
