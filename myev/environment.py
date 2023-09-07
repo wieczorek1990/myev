@@ -40,7 +40,8 @@ class Environment(dict):
 
     @staticmethod
     def get_tuple_config(something):
-        match len(something):
+        size = len(something)
+        match size:
             case 0:
                 return str, []
             case 1:
@@ -53,7 +54,7 @@ class Environment(dict):
                     validators = [validators]
                 return something[0], validators
             case _:
-                raise ValueError('Invalid tuple size.')
+                raise ValueError(f'Invalid tuple size: {size}.')
 
     def get_cast_and_validators(self, something):
         something_type = type(something)
@@ -63,19 +64,23 @@ class Environment(dict):
             return self.get_tuple_config(something)
         elif something is None:
             return str, []
+        elif inspect.isfunction(something):
+            return something, []
         else:
             raise ValueError(f'Invalid type: {something_type}.')
 
     @staticmethod
     def get_cast_value(cast, value):
         if cast is str:
-            return value  # no cast
+            return value
         elif cast is bool:
-            return bool(int(value))  # '0' or '1'
+            return bool(int(value))
         elif cast is int:
-            return int(value)  # str to int
+            return int(value)
+        elif inspect.isfunction(cast):
+            return cast(value)
         else:
-            raise ValueError('Invalid cast.')
+            raise ValueError(f'Invalid cast: {cast}.')
 
     def set_attributes(self, module):
         for key, value in self.items():

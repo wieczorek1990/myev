@@ -37,6 +37,7 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_K=(str, validators.does_end_with_slash),
             STRING_L=(str, validators.does_not_end_with_slash),
             STRING_M=(str, validators.Length(4)),
+            STRING_N=lambda value: bool(int(value)),
         )
         self.values = dict(
             BOOLEAN_A='1',
@@ -67,6 +68,7 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_K='https://google.com/',
             STRING_L='https://google.com',
             STRING_M="abcd",
+            STRING_N="1",
         )
         self.cast_values = dict(
             BOOLEAN_A=True,
@@ -97,6 +99,7 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_K='https://google.com/',
             STRING_L='https://google.com',
             STRING_M="abcd",
+            STRING_N=True,
         )
 
     def test_environment(self):
@@ -108,6 +111,9 @@ class EnvironmentTestCase(unittest.TestCase):
         module = sys.modules[__name__]
 
         for name in self.config.keys():
-            self.assertTrue(hasattr(module, name))
-            self.assertEqual(getattr(module, name), self.cast_values[name])
-            self.assertEqual(environment[name], self.cast_values[name])
+            has_value = hasattr(module, name)
+            self.assertTrue(has_value)
+            module_value = getattr(module, name)
+            cast_value = self.cast_values[name]
+            self.assertEqual(module_value, cast_value)
+            self.assertEqual(environment[name], cast_value)
