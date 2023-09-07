@@ -117,3 +117,14 @@ class EnvironmentTestCase(unittest.TestCase):
             cast_value = self.cast_values[name]
             self.assertEqual(module_value, cast_value)
             self.assertEqual(environment[name], cast_value)
+
+    def test_defaults(self):
+        class Default:
+            pass
+
+        environment = myev.Environment(**{
+            "DEFAULT": str,
+        }, defaults={
+            "DEFAULT": Default(),
+        })
+        self.assertIsInstance(environment["DEFAULT"], Default)

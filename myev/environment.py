@@ -17,14 +17,19 @@ class Environment(dict):
     * None
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, defaults=None, **kwargs):
+        self.defaults = defaults
         super().__init__(**kwargs)
         self.set_cast_values()
 
     def set_cast_values(self):
         for key, something in self.items():
             cast, validators = self.get_cast_and_validators(something)
-            value = os.environ[key]
+            if self.defaults is not None:
+                default = self.defaults.get(key)
+            else:
+                default = None
+            value = os.environ.get(key, default)
             cast_value = self.get_cast_value(cast, value)
             for validator in validators:
                 validator(cast_value)
