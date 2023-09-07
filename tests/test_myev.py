@@ -128,3 +128,12 @@ class EnvironmentTestCase(unittest.TestCase):
             "DEFAULT": Default(),
         })
         self.assertIsInstance(environment["DEFAULT"], Default)
+
+    def test_rename(self):
+        os.environ["RENAME"] = "rename"
+
+        environment = myev.Environment(**{
+            "RENAME": str,
+        })
+        environment.rename("RENAME", "RENAMED")
+        self.assertEqual(environment["RENAMED"], "rename")

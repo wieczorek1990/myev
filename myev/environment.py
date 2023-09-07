@@ -100,3 +100,6 @@ class Environment(dict):
         if module is None:  # in __main__
             module = self.get_main_module()
         self.set_attributes(module)
+
+    def rename(self, old_key, new_key):
+        self[new_key] = self.pop(old_key)
