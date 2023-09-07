@@ -61,10 +61,10 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_D='string',
             STRING_E='string',
             STRING_F='string',
-            STRING_G='luke@localhost',
-            STRING_H='localhost',
-            STRING_I='https://localhost',
-            STRING_J='luke@localhost',
+            STRING_G='luke@soiree.tech',
+            STRING_H='soiree.tech',
+            STRING_I='https://soiree.tech',
+            STRING_J='luke@soiree.tech',
             STRING_K='https://google.com/',
             STRING_L='https://google.com',
             STRING_M="abcd",
@@ -92,10 +92,10 @@ class EnvironmentTestCase(unittest.TestCase):
             STRING_D='string',
             STRING_E='string',
             STRING_F='string',
-            STRING_G='luke@localhost',
-            STRING_H='localhost',
-            STRING_I='https://localhost',
-            STRING_J='luke@localhost',
+            STRING_G='luke@soiree.tech',
+            STRING_H='soiree.tech',
+            STRING_I='https://soiree.tech',
+            STRING_J='luke@soiree.tech',
             STRING_K='https://google.com/',
             STRING_L='https://google.com',
             STRING_M="abcd",
@@ -137,3 +137,11 @@ class EnvironmentTestCase(unittest.TestCase):
         })
         environment.rename("RENAME", "RENAMED")
         self.assertEqual(environment["RENAMED"], "rename")
+
+    def test_failing_validation(self):
+        os.environ["FAIL"] = ""
+
+        with self.assertRaises(validators.ValidationError):
+            environment = myev.Environment(**{
+                "FAIL": (str, validators.Length(1)),
+            })

@@ -4,7 +4,7 @@ echo "Guard!"
 
 ./bin/style &&\
  ./bin/check &&\
-  ./bin/test
+  ./bin/test $@
 
 if [ $? -eq 0 ]
 then

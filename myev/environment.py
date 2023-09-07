@@ -2,6 +2,8 @@ import inspect
 import os
 import sys
 
+from myev import validators
+
 
 class Environment(dict):
     """
@@ -22,26 +24,24 @@ class Environment(dict):
         super().__init__(**kwargs)
         self.set_cast_values()
 
+    def get_default(self, key):
+        if self.defaults is not None:
+            default = self.defaults.get(key)
+        else:
+            default = None
+        return default
+
     def set_cast_values(self):
         for key, something in self.items():
-            cast, validators = self.get_cast_and_validators(something)
-            if self.defaults is not None:
-                default = self.defaults.get(key)
-            else:
-                default = None
+            cast, all_validators = self.get_cast_and_validators(something)
+            default = self.get_default(key)
             value = os.environ.get(key, default)
             cast_value = self.get_cast_value(cast, value)
-            for validator in validators:
-                validator(cast_value)
+            for validator in all_validators:
+                result = validator(cast_value)
+                if isinstance(result, validators.ValidationError):
+                    raise result
             self[key] = cast_value
-
-    @staticmethod
-    def get_calling_module(frame_info):
-        return inspect.getmodule(frame_info.frame)
-
-    @staticmethod
-    def get_main_module():
-        return sys.modules['__main__']
 
     @staticmethod
     def get_tuple_config(something):
@@ -52,25 +52,25 @@ class Environment(dict):
             case 1:
                 return something[0], []
             case 2:
-                validators = something[1]
+                cast, validators = something
                 if validators is None:
                     validators = []
                 elif callable(validators):
                     validators = [validators]
-                return something[0], validators
+                return cast, validators
             case _:
                 raise ValueError(f'Invalid tuple size: {size}.')
 
     def get_cast_and_validators(self, something):
         something_type = type(something)
-        if something_type == type:
-            return something, []
-        elif something_type == tuple:
+        if something_type == tuple:
             return self.get_tuple_config(something)
+        elif something_type == type:
+            return something, []
+        elif callable(something):
+            return something, []
         elif something is None:
             return str, []
-        elif inspect.isfunction(something):
-            return something, []
         else:
             raise ValueError(f'Invalid type: {something_type}.')
 
@@ -82,10 +82,18 @@ class Environment(dict):
             return bool(int(value))
         elif cast is int:
             return int(value)
-        elif inspect.isfunction(cast):
+        elif callable(cast):
             return cast(value)
         else:
             raise ValueError(f'Invalid cast: {cast}.')
+
+    @staticmethod
+    def get_calling_module(frame_info):
+        return inspect.getmodule(frame_info.frame)
+
+    @staticmethod
+    def get_main_module():
+        return sys.modules['__main__']
 
     def set_attributes(self, module):
         for key, value in self.items():

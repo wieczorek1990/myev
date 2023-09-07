@@ -2,4 +2,4 @@
 
 DIR=$(dirname "$0")/..
 
-poetry run flake8 --max-line-length 80 "${DIR}/myev/"
+poetry run flake8 "${DIR}/myev/"
